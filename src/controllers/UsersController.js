@@ -45,14 +45,9 @@ class UsersController {
   };
 
   async getAll(request, response) {
-    const formatedUsers = users.map(({ name, email, created_at, updated_at }) => ({
-      name,
-      email,
-      created_at,
-      updated_at,
-    }));
+    const users = await knex('users');
 
-    response.json(formatedUsers);
+    response.json(users);
   }
 
   async getOne(request, response) {

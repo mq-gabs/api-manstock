@@ -6,7 +6,6 @@ exports.up = knex => knex.schema.createTable('purchases', table => {
   table.uuid('payment_type_id').references('id').inTable('payment_types');
   table.integer('owner').references('id').inTable('users');
   table.timestamp('created_at').default(knex.fn.now());
-  table.timestamp('updated_at').default(knex.fn.now());
 
   table.unique('id');
 });

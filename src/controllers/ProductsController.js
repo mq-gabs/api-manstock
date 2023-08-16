@@ -52,8 +52,8 @@ class ProductsController {
     .limit(pageSize || 10)
     .offset((page * pageSize) || 0)
     .orderBy('name', 'asc')
-    .where(knex.raw('created_at > ?', initDateTime))
-    .where(knex.raw('created_at < ?', endDateTime));
+    // .where(knex.raw('created_at > ?', initDateTime))
+    // .where(knex.raw('created_at < ?', endDateTime));
 
     // .modify(qb => {
     //   if (initDateTime) {
@@ -64,7 +64,7 @@ class ProductsController {
     //   }
     // })
 
-    response.json({ products, total });
+    response.json(products);
   };
 
   async getOne(request, response) {
@@ -92,7 +92,7 @@ class ProductsController {
       throw new AppError('No updated entry was sent');
     }
 
-    const product = knex('products').where({ id: product_id }).first();
+    const product = await knex('products').where({ id: product_id }).first();
 
     if (!product) {
       throw new AppError('Product does not exists!', 404);
@@ -106,6 +106,7 @@ class ProductsController {
       ...product,
       name: name || product.name,
       price: price || product.price,
+      updated_at: knex.fn.now(),
     };
 
     const check = await knex('products').where({ id: product_id }).update(updatedProduct);

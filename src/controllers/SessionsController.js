@@ -26,7 +26,7 @@ class SessionsController {
     const token = sign({ 
       userProfile: userProfile.name,
     }, secret, {
-      subject: String(user.id),
+      subject: user.id,
       expiresIn,
     });
 
