@@ -40,9 +40,6 @@ class ProductsController {
     } = request.query;
     const { id, profile } = request.user;
 
-    const initDateTime = `${initDate || ''} ${initTime || ''}`.trim();
-    const endDateTime = `${endDate || ''} ${endTime || ''}`.trim();
-    
     const products = await knex('products')
     .whereLike('code', `%${code}%`)
     .andWhereLike('name', `%${name}%`)
@@ -71,7 +68,15 @@ class ProductsController {
       }
     });
 
-    response.json(products);
+    const [{ count }] = await knex('products')
+    .count('id', { as: 'count' })
+    .modify(qb => {
+      if (profile !== 'admin') {
+        qb.where({ owner: id });
+      }
+    });
+
+    response.json([products, count]);
   };
 
   async getOne(request, response) {
@@ -79,8 +84,6 @@ class ProductsController {
     const { id: user_id, profile } = request.user;
 
     const product = await knex('products').where({ id }).first();
-
-    console.log({ product, user_id, profile });
 
     if (!product || (product.owner !== user_id && profile !== 'admin')) {
       throw new AppError('There is no product with this id', 404);
@@ -149,6 +152,18 @@ class ProductsController {
 
     response.json({ message: 'Product deleted successfully!' })
   };
+
+  async getByPurchaseId(request, response) {
+    const { id } = request.params;
+
+    const purchasesProducts = await knex('purchases_products').where({ purchase_id: id });
+
+    const products = await Promise.all(
+      purchasesProducts.map(async purchase => await knex('products').where({ id: purchase.product_id }).first())
+    );
+      
+    response.json(products);
+  }
 }
 
 module.exports = ProductsController;

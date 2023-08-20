@@ -12,5 +12,6 @@ productsRoutes.get('/:id', productsController.getOne);
 productsRoutes.post('/', productsController.create);
 productsRoutes.patch('/:id', productsController.update);
 productsRoutes.delete('/:id', productsController.delete);
+productsRoutes.get('/purchase/:id', productsController.getByPurchaseId);
 
 module.exports = productsRoutes;
