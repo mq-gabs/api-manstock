@@ -10,11 +10,12 @@ class SessionsController {
 
     const user = await knex('users').where({ email }).first();
 
-    const userProfile = await knex('profiles').where({ id: user.profile_id }).first();
-
     if (!user) {
       throw new AppError('Email or password incorrect!', 401);
     }
+    
+    const userProfile = await knex('profiles').where({ id: user.profile_id }).first();
+
 
     const checkPassword = await compare(password, user.password);
 

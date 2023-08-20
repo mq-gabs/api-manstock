@@ -38,44 +38,53 @@ class ProductsController {
       initTime,
       endTime,
     } = request.query;
-    const { id } = request.user;
+    const { id, profile } = request.user;
 
     const initDateTime = `${initDate || ''} ${initTime || ''}`.trim();
     const endDateTime = `${endDate || ''} ${endTime || ''}`.trim();
     
-    console.log({ query: request.query, initDateTime, endDateTime });
-
     const products = await knex('products')
-    .where({ owner: id })
     .whereLike('code', `%${code}%`)
     .andWhereLike('name', `%${name}%`)
     .limit(pageSize || 10)
     .offset((page * pageSize) || 0)
     .orderBy('name', 'asc')
-    // .where(knex.raw('created_at > ?', initDateTime))
-    // .where(knex.raw('created_at < ?', endDateTime));
+    .modify(qb => {
+      if (profile !== 'admin') {
+        qb.where({ owner: id });
+      }
 
-    // .modify(qb => {
-    //   if (initDateTime) {
-    //     qb.where(knex.raw('created_at > ?', initDateTime));
-    //   }
-    //   if (endDateTime) {         
-    //     qb.where(knex.raw('created_at < ?', endDateTime));
-    //   }
-    // })
+      if (initDate) {
+        qb.where(knex.raw('created_at > ?', initDate));
+      }
+
+      if (endDate) {
+        qb.where(knex.raw('created_at < ?', endDate));
+      }
+
+      if (initTime) {
+        qb.where(knex.raw('time(created_at) > ?', initTime));
+      }
+
+      if (endTime) {
+        qb.where(knex.raw('time(created_at) < ?', endTime));
+      }
+    });
 
     response.json(products);
   };
 
   async getOne(request, response) {
     const { id } = request.params;
-    const { id: user_id } = request.user;
+    const { id: user_id, profile } = request.user;
 
     const product = await knex('products').where({ id }).first();
-    
-    if (!product || product.owner !== user_id) {
+
+    console.log({ product, user_id, profile });
+
+    if (!product || (product.owner !== user_id && profile !== 'admin')) {
       throw new AppError('There is no product with this id', 404);
-    } 
+    }
     
     response.json(product);
   };

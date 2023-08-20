@@ -79,6 +79,8 @@ class UsersController {
     } = request.body;
     const { id: user_token_id, userProfile } = request.user;
 
+    console.log({ userProfile });
+
     if (!name && !email && !oldPassword && !newPassword) {
       throw new AppError('No updated entry was sent!', 400);
     }
