@@ -1,6 +1,5 @@
 const knex = require('../database/knex');
 const AppError = require('../utils/AppError');
-const validateEntries = require('../utils/validateEntries');
 
 class ProductsController {
   async create(request, response) {
