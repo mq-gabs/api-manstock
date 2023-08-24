@@ -176,6 +176,24 @@ class ProductsController {
     
     response.json(product);
   }
+
+  async getProductByCode(request, response) {
+    const { code } = request.params;
+    const { profile, id } = request.user;
+
+    const product = await knex('products').where({ code })
+    .modify(qb => {
+      if (profile !== 'admin') {
+        qb.where({ owner: id });
+      }
+    }).first();
+
+    if (!product) {
+      throw new AppError('There is no product with this code!');
+    }
+
+    response.json(product);
+  }
 }
 
 module.exports = ProductsController;

@@ -10,6 +10,7 @@ productsRoutes.use(ensureAuthenticated);
 
 productsRoutes.get('/', productsController.getAll);
 productsRoutes.get('/random', ensureAdmin, productsController.getRamdomProduct);
+productsRoutes.get('/code/:code', productsController.getProductByCode);
 productsRoutes.get('/:id', productsController.getOne);
 productsRoutes.post('/', productsController.create);
 productsRoutes.patch('/:id', productsController.update);
