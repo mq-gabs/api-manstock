@@ -163,6 +163,19 @@ class ProductsController {
       
     response.json(products);
   }
+
+  async getRamdomProduct(request, response) {
+    const { profile } = request.user;
+    if (profile !== 'admin') {
+      throw new AppError('This action can be made only by admins!');
+    }
+
+    const products = await knex('products');
+
+    const product = products[Math.floor(Math.random() * products.length)];
+    
+    response.json(product);
+  }
 }
 
 module.exports = ProductsController;
