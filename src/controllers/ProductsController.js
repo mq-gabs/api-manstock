@@ -23,7 +23,7 @@ class ProductsController {
 
     if (!check) throw new AppError('Cant save product', 500);
 
-    response.status(201).json({ message: 'Product created successfully!' });
+    response.status(201).json({ message: 'Product created successfully!', product: { name, price, code } });
   };
 
   async getAll(request, response) {
