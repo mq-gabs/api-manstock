@@ -1,3 +1,4 @@
+require('dotenv/config');
 require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
@@ -5,7 +6,7 @@ const database = require('./database/sqlite');
 const routes = require('./routes');
 const errorHandling = require('./utils/error-handling');
 
-const PORT = 5555;
+const PORT = process.env.PORT;
 const app = express();
 
 app.use(express.json());
