@@ -69,17 +69,19 @@ class PurchasesController {
       productName,
       productCode,
       purchaseId,
-      page,
-      pageSize,
+      page: _page,
+      pageSize: _pageSize,
       initDate,
       endDate,
       initTime,
       endTime,
     } = request.query;
     const { id: user_id, profile } = request.user;
+    const page = Number(_page);
+    const pageSize = Number(_pageSize);
 
     let purchases = await knex('purchases')
-    .orderBy('created_at', 'DES')
+    .orderBy('created_at', 'DESC')
     .modify(qb => {
       if (purchaseId) {
         qb.where({ id: purchaseId });
@@ -137,7 +139,10 @@ class PurchasesController {
 
     const count = purchases.length;
 
-    response.json([purchases.slice(page * pageSize || 0,(page + 1) * pageSize || 10), count]);
+    const initPos = (page * pageSize) || 0;
+    const endPos = ((page + 1) * pageSize) || 10;
+
+    response.json([purchases.slice(initPos, endPos), count]);
   };
   
   async getOne(request, response) {
