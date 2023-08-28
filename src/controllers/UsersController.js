@@ -47,7 +47,26 @@ class UsersController {
   async getAll(request, response) {
     const users = await knex('users');
 
-    response.json(users);
+    const newUsers = await Promise.all(
+      users.map(async user => {
+        const profile = await knex('profiles').where({ id: user.profile_id }).first();
+        return {
+          ...user,
+          profile: profile.name
+        }
+      })
+    )
+
+    const formatedUsers = newUsers.map(({ id, name, email, created_at, updated_at, profile }) => ({
+      id,
+      name,
+      email,
+      created_at,
+      updated_at,
+      profile,
+    }));
+
+    response.json(formatedUsers);
   }
 
   async getOne(request, response) {
@@ -79,8 +98,6 @@ class UsersController {
     } = request.body;
     const { id: user_token_id, userProfile } = request.user;
 
-    console.log({ userProfile });
-
     if (!name && !email && !oldPassword && !newPassword) {
       throw new AppError('No updated entry was sent!', 400);
     }
@@ -92,7 +109,7 @@ class UsersController {
     const user = await knex('users').where({ id }).first();
 
     if (!user) {
-      throw new AppError('User does not exists!', 404);
+      throw new AppError('User does not exists!', 400);
     }
 
     if (newPassword && !oldPassword) {
