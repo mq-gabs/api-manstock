@@ -94,16 +94,23 @@ class UsersController {
       name,
       email,
       oldPassword,
-      newPassword
+      newPassword,
+      profileName,
     } = request.body;
-    const { id: user_token_id, userProfile } = request.user;
+    const { id: user_token_id, profile } = request.user;
 
-    if (!name && !email && !oldPassword && !newPassword) {
+    if (!name && !email && !oldPassword && !newPassword && !profileName) {
       throw new AppError('No updated entry was sent!', 400);
     }
 
-    if (id !== user_token_id && userProfile !== 'admin') {
+    if (id !== user_token_id && profile !== 'admin') {
       throw new AppError('The current logged user can not update this user!', 401);
+    }
+
+    const { id: newProfileId } = await knex('profiles').where({ name: profileName }).first();
+
+    if (!newProfileId) {
+      throw new AppError('There is no profile with this name!');
     }
 
     const user = await knex('users').where({ id }).first();
@@ -131,6 +138,7 @@ class UsersController {
       name: name || user.name,
       email: email || user.email,
       password: encryptedPassword || user.password,
+      profile_id: newProfileId || user.profile_id,
       updated_at: knex.fn.now(),
     }
 
