@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "pm2-runtime start ecosystem.config.js --env production",
-    "start:dev": "nodemon src/index.js",
+    "start:dev": "NODE_ENV=dev1 nodemon src/index.js",
+    "start:dev2": "NODE_ENV=dev2 nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make",

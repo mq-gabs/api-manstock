@@ -14,6 +14,6 @@ app.use(cors());
 app.use(routes);
 app.use(errorHandling);
 
-database();
+// database();
 
 app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));

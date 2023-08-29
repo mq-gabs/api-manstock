@@ -1,9 +1,9 @@
-exports.up = knex => knex.schema.createTable('users', table => {
+exports.up = knex => 
+knex.schema.createTable('users', table => {
   table.uuid('id').default(knex.fn.uuid());
-  table.text('name').notNullable();
-  table.text('email').notNullable();
-  table.text('password').notNullable();
-  table.uuid('profile_id').references('id').inTable('profiles');
+  table.string('name').notNullable();
+  table.string('email', { constraintName: 'users_email_unique' }).notNullable();
+  table.string('password').notNullable();
   table.timestamp('created_at').default(knex.fn.now());
   table.timestamp('updated_at').default(knex.fn.now());
 
